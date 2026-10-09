@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}User Dashboard — CrimeConnect{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Welcome Banner -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <span class="section-tag">Citizen Portal</span>
+      <h1 class="section-title">Welcome, {{ current_user.full_name }}</h1>
+      <p class="section-subtitle" style="margin: 4px 0 0;">
+        Monitor the status of your submitted incident reports and track administrative updates.
+      </p>
+    </div>
+    <a href="{{ url_for('complaints.report_complaint') }}" class="btn btn-primary btn-lg">
+      <i class="fa-solid fa-file-circle-plus"></i> File New Complaint
+    </a>
+  </div>
+
+  <!-- Metric Stat Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon primary">
+        <i class="fa-solid fa-folder-open"></i>
+      </div>
+      <div>
+        <div class="stat-value">{{ total_count }}</div>
+        <div class="stat-label">Total Reports Filed</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon warning">
+        <i class="fa-solid fa-hourglass-half"></i>
+      </div>
+      <div>
+        <div class="stat-value">{{ under_review_count }}</div>
+        <div class="stat-label">Under Investigation</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon success">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <div>
+        <div class="stat-value">{{ resolved_count }}</div>
+        <div class="stat-label">Resolved Incidents</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter & Search Bar -->
+  <div class="card">
+    <div class="card-body" style="padding: 16px 20px;">
+      <form method="GET" action="{{ url_for('complaints.dashboard') }}" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+        
+        <div style="flex: 1; min-width: 200px;">
+          <input type="text" name="q" value="{{ search_keyword }}" placeholder="Search by title, location or ref #" class="form-control">
+        </div>
+
+        <div style="min-width: 170px;">
+          <select name="status" class="form-select">
+            <option value="">All Statuses</option>
+            {% for s in statuses %}
+              <option value="{{ s }}" {% if status_filter == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div style="min-width: 170px;">
+          <select name="category" class="form-select">
+            <option value="">All Categories</option>
+            {% for c in categories %}
+              <option value="{{ c }}" {% if category_filter == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-secondary">
+          <i class="fa-solid fa-filter"></i> Filter
+        </button>
+
+        {% if search_keyword or status_filter or category_filter %}
+          <a href="{{ url_for('complaints.dashboard') }}" class="btn btn-outline">
+            <i class="fa-solid fa-rotate-left"></i> Reset
+          </a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <!-- Complaints Table -->
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="fa-solid fa-table-list" style="color: var(--accent-blue);"></i> My Incident Reports</h3>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">
+        Showing {{ complaints|length }} record(s)
+      </span>
+    </div>
+
+    <div class="card-body" style="padding: 0;">
+      {% if complaints %}
+        <div class="table-container" style="border: none;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Reference #</th>
+                <th>Incident Title</th>
+                <th>Category</th>
+                <th>Incident Date</th>
+                <th>Current Status</th>
+                <th>Last Update</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in complaints %}
+                <tr>
+                  <td>
+                    <strong style="font-family: monospace; color: var(--accent-blue);">
+                      {{ c.reference_number }}
+                    </strong>
+                  </td>
+                  <td>
+                    <div style="font-weight: 600; color: var(--text-main);">{{ c.title }}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-solid fa-location-dot"></i> {{ c.incident_location }}</div>
+                  </td>
+                  <td>
+                    <span style="font-size: 0.85rem; background: var(--bg-alt); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color);">
+                      {{ c.category }}
+                    </span>
+                  </td>
+                  <td>{{ c.incident_date.strftime('%Y-%m-%d') }}</td>
+                  <td>
+                    <span class="badge {{ c.status_badge_class }}">
+                      {{ c.status }}
+                    </span>
+                  </td>
+                  <td style="font-size: 0.85rem; color: var(--text-muted);">
+                    {{ c.updated_at.strftime('%Y-%m-%d %H:%M') }}
+                  </td>
+                  <td style="text-align: right;">
+                    <a href="{{ url_for('complaints.view_complaint', complaint_id=c.id) }}" class="btn btn-outline btn-sm">
+                      <i class="fa-solid fa-eye"></i> View Case
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fa-regular fa-folder-open"></i>
+          </div>
+          <h3>No Incident Reports Found</h3>
+          <p>
+            {% if search_keyword or status_filter or category_filter %}
+              No complaints matched your search filter criteria. Try clearing filters to see all records.
+            {% else %}
+              You haven't filed any complaint reports yet. Use the button below to register a new report.
+            {% endif %}
+          </p>
+          {% if search_keyword or status_filter or category_filter %}
+            <a href="{{ url_for('complaints.dashboard') }}" class="btn btn-outline">
+              Clear Filters
+            </a>
+          {% else %}
+            <a href="{{ url_for('complaints.report_complaint') }}" class="btn btn-primary">
+              <i class="fa-solid fa-file-circle-plus"></i> File Your First Complaint
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

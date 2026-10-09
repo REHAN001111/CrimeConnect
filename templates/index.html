@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+
+{% block title %}CrimeConnect — Online Crime Reporting and Complaint Management{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-badge">
+          <i class="fa-solid fa-shield-halved"></i> Academic Prototype Portal
+        </div>
+        <h1 class="hero-title">Report. Track. <span>Stay Informed.</span></h1>
+        <p class="hero-description">
+          A modern, secure incident management platform for citizens to register fictional crime complaints, obtain instant reference tracking codes, and monitor resolution timelines in real time.
+        </p>
+        <div class="hero-actions">
+          <a href="{{ url_for('complaints.report_complaint') }}" class="btn btn-primary btn-lg">
+            <i class="fa-solid fa-file-shield"></i> Report a Complaint
+          </a>
+          <a href="{{ url_for('complaints.track_complaint') }}" class="btn btn-secondary btn-lg">
+            <i class="fa-solid fa-magnifying-glass-location"></i> Track Complaint
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <div class="hero-stats-panel">
+          <h4><i class="fa-solid fa-chart-line"></i> Demonstration Metrics</h4>
+          <div class="hero-stat-row">
+            <span>Total Logged Incidents</span>
+            <strong style="font-size: 1.25rem;">{{ total_complaints }}</strong>
+          </div>
+          <div class="hero-stat-row">
+            <span>Currently Under Review</span>
+            <strong style="color: #fbbf24; font-size: 1.25rem;">{{ under_review }}</strong>
+          </div>
+          <div class="hero-stat-row">
+            <span>Successfully Resolved</span>
+            <strong style="color: #34d399; font-size: 1.25rem;">{{ resolved_complaints }}</strong>
+          </div>
+          <div class="hero-stat-row">
+            <span>Average Acknowledgment</span>
+            <strong style="color: #60a5fa; font-size: 1.1rem;">Instant Reference #</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Educational Disclaimer Notice Card -->
+  <div class="card" style="border-left: 4px solid var(--crimson-red); background-color: var(--crimson-red-light); margin-bottom: 48px;">
+    <div class="card-body" style="display: flex; gap: 16px; align-items: flex-start;">
+      <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.8rem; color: var(--crimson-red); margin-top: 2px;"></i>
+      <div>
+        <h4 style="color: var(--crimson-red); font-size: 1.1rem; margin-bottom: 6px;">
+          Important Academic Disclaimer
+        </h4>
+        <p style="color: #7f1d1d; font-size: 0.95rem; line-height: 1.5;">
+          This web application is developed solely for an <strong>Information Technology Lab (ITL)</strong> academic demonstration. It is <strong>NOT</strong> an official police reporting channel and is <strong>NOT</strong> monitored by real law enforcement personnel. Do not submit sensitive real-life personal credentials or genuine emergency distress calls. For real-life emergencies, dial <strong>911 / 112 / 100</strong> immediately.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- How It Works Section -->
+  <section style="margin-bottom: 56px;">
+    <div class="section-header">
+      <span class="section-tag">Simple 3-Step Process</span>
+      <h2 class="section-title">How CrimeConnect Works</h2>
+      <p class="section-subtitle">
+        Filing an incident report and staying updated on case progress is transparent and straightforward.
+      </p>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <h3>Submit Incident Details</h3>
+        <p>
+          Fill out the structured complaint form with category, incident date, location, full description, and optional evidence documents.
+        </p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <h3>Receive Tracking Code</h3>
+        <p>
+          The system immediately generates a unique complaint reference identifier (e.g. <code>CR-20261009-ABC12</code>) saved in the database.
+        </p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <h3>Track Progress & Remarks</h3>
+        <p>
+          Follow review milestones, transparent administrative remarks, and status transitions from "Submitted" to "Resolved".
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Incident Categories Section -->
+  <section style="margin-bottom: 56px;">
+    <div class="section-header">
+      <span class="section-tag">Incident Coverage</span>
+      <h2 class="section-title">Fictional Complaint Categories</h2>
+      <p class="section-subtitle">
+        Our demonstration platform categorizes reports into standard public service crime domains.
+      </p>
+    </div>
+
+    <div class="categories-grid">
+      <div class="category-card">
+        <span class="cat-badge"><i class="fa-solid fa-laptop-code"></i> Cybercrime</span>
+        <h4>Online Fraud & Phishing</h4>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">
+          Unauthorized digital transactions, phishing attacks, impersonation on digital portals, and credential compromise.
+        </p>
+      </div>
+
+      <div class="category-card">
+        <span class="cat-badge"><i class="fa-solid fa-hand-holding-dollar"></i> Theft</span>
+        <h4>Property & Vehicle Theft</h4>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">
+          Stolen personal belongings, bicycle or vehicle theft, residential or campus property burglary.
+        </p>
+      </div>
+
+      <div class="category-card">
+        <span class="cat-badge"><i class="fa-solid fa-money-bill-transfer"></i> Fraud</span>
+        <h4>Financial & Consumer Scams</h4>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">
+          Counterfeit products, marketplace escrow fraud, fake job offers, and advance fee scams.
+        </p>
+      </div>
+
+      <div class="category-card">
+        <span class="cat-badge"><i class="fa-solid fa-bullhorn"></i> Harassment</span>
+        <h4>Stalking & Threat Reports</h4>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">
+          Verbal intimidation, unsolicited digital stalking, online defamatory smear campaigns, and threats.
+        </p>
+      </div>
+
+      <div class="category-card">
+        <span class="cat-badge"><i class="fa-solid fa-spray-can"></i> Vandalism</span>
+        <h4>Public Property Damage</h4>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">
+          Defacement of educational or public infrastructure, broken property, graffiti, and deliberate damage.
+        </p>
+      </div>
+
+      <div class="category-card">
+        <span class="cat-badge"><i class="fa-solid fa-box-archive"></i> Missing Property</span>
+        <h4>Lost Valuables & Items</h4>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">
+          Misplaced identification cards, lost electronics, backpacks, and lost-and-found coordination.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Platform Features Section -->
+  <section style="margin-bottom: 56px;">
+    <div class="section-header">
+      <span class="section-tag">System Architecture</span>
+      <h2 class="section-title">Built with Security & Integrity</h2>
+      <p class="section-subtitle">
+        Engineered according to modern software design patterns and defensive development practices.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-box">
+        <div class="feature-icon"><i class="fa-solid fa-lock"></i></div>
+        <div>
+          <h4>Secure Authentication</h4>
+          <p>Passwords are never stored in plaintext. Hashed using modern cryptographic schemes via Werkzeug.</p>
+        </div>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon"><i class="fa-solid fa-user-shield"></i></div>
+        <div>
+          <h4>Role-Based Access Control</h4>
+          <p>Strict server-side validation separating citizen access from administrative privilege and confidential internal notes.</p>
+        </div>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+        <div>
+          <h4>Immutable Audit Trail</h4>
+          <p>Every status transition and administrative remark is logged with author identity and timestamp.</p>
+        </div>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon"><i class="fa-solid fa-shield-virus"></i></div>
+        <div>
+          <h4>CSRF & Injection Defenses</h4>
+          <p>WTForms token validation protects all state-changing forms against Cross-Site Request Forgery and SQL injection.</p>
+        </div>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon"><i class="fa-solid fa-file-arrow-up"></i></div>
+        <div>
+          <h4>Isolated File Storage</h4>
+          <p>Uploaded evidence is stored in an unexposed instance folder with randomized UUID filenames to prevent path traversal.</p>
+        </div>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon"><i class="fa-solid fa-file-csv"></i></div>
+        <div>
+          <h4>Export & Visual Analytics</h4>
+          <p>Authorized staff can export filtered reports to CSV and inspect real-time categorical analytics via Chart.js.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Frequently Asked Questions Section -->
+  <section style="margin-bottom: 48px;">
+    <div class="section-header">
+      <span class="section-tag">Help & Clarity</span>
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <p class="section-subtitle">
+        Common queries regarding incident reporting, tracking privacy, and demonstration data.
+      </p>
+    </div>
+
+    <div style="display: grid; gap: 16px; max-width: 860px; margin: 0 auto;">
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-question-circle" style="color: var(--accent-blue);"></i> Is this system monitored by real police officers?</h3>
+        </div>
+        <div class="card-body">
+          <p style="color: var(--text-muted);">
+            No. CrimeConnect is an educational demonstration project developed for college laboratory evaluation. No reports are transmitted to any municipal, state, or federal law enforcement agency.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-question-circle" style="color: var(--accent-blue);"></i> How does the complaint tracking protect complainant privacy?</h3>
+        </div>
+        <div class="card-body">
+          <p style="color: var(--text-muted);">
+            Anyone tracking a complaint must provide both the exact <strong>Reference Number</strong> and the <strong>Complainant's Registered Email</strong> (or be logged in as the report owner). Guessing or knowing a reference number alone does not reveal case details.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-question-circle" style="color: var(--accent-blue);"></i> What statuses can a complaint go through?</h3>
+        </div>
+        <div class="card-body">
+          <p style="color: var(--text-muted);">
+            A complaint flows through five standardized lifecycle stages: <strong>Submitted</strong> &rarr; <strong>Under Review</strong> &rarr; <strong>Additional Information Requested</strong> &rarr; <strong>Resolved</strong> &rarr; <strong>Closed</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

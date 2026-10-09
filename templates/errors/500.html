@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}500 Internal Error — CrimeConnect{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; text-align: center; padding: 60px 20px;">
+  <div style="font-size: 4rem; color: var(--crimson-red); margin-bottom: 16px;">
+    <i class="fa-solid fa-server"></i>
+  </div>
+  <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 12px;">500 — Server Encountered Error</h1>
+  <p style="color: var(--text-muted); font-size: 1.05rem; margin-bottom: 24px;">
+    An unexpected condition prevented the application server from fulfilling your request. The database transaction has been safely rolled back.
+  </p>
+  <div style="display: flex; justify-content: center; gap: 12px;">
+    <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+      <i class="fa-solid fa-house"></i> Return Home
+    </a>
+  </div>
+</div>
+{% endblock %}

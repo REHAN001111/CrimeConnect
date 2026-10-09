@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In — CrimeConnect{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="brand-icon" style="margin: 0 auto; width: 48px; height: 48px; font-size: 1.4rem;">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <h2>Sign In to Portal</h2>
+        <p>Access your incident dashboard or administrative control center</p>
+      </div>
+
+      <!-- Quick Demo Credentials Box for College Evaluator / Teacher -->
+      <div class="demo-credentials-box">
+        <h5><i class="fa-solid fa-wand-magic-sparkles"></i> Demo Quick Login</h5>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">
+          Click a button below to autofill demonstration credentials:
+        </p>
+        <div class="demo-btn-group">
+          <button type="button" id="demoAdminBtn" class="btn btn-outline btn-sm" style="flex: 1;">
+            <i class="fa-solid fa-user-gear"></i> Admin Demo
+          </button>
+          <button type="button" id="demoCitizenBtn" class="btn btn-outline btn-sm" style="flex: 1;">
+            <i class="fa-solid fa-user"></i> Citizen Demo
+          </button>
+        </div>
+      </div>
+
+      <form method="POST" action="{{ url_for('auth.login', next=request.args.get('next')) }}" class="needs-loading-feedback">
+        {{ form.csrf_token }}
+
+        <div class="form-group">
+          <label class="form-label" for="email">
+            <i class="fa-regular fa-envelope"></i> Email Address <span class="required">*</span>
+          </label>
+          {{ form.email(class="form-control", id="email", placeholder="e.g. citizen@crimeconnect.local", autocomplete="email") }}
+          {% for error in form.email.errors %}
+            <div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">
+            <i class="fa-solid fa-key"></i> Password <span class="required">*</span>
+          </label>
+          {{ form.password(class="form-control", id="password", placeholder="Enter your password", autocomplete="current-password") }}
+          {% for error in form.password.errors %}
+            <div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-check" style="justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            {{ form.remember_me(id="remember_me") }}
+            <label for="remember_me" style="margin-bottom: 0;">Remember my session</label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 8px;">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
+        </button>
+      </form>
+
+      <div style="margin-top: 24px; text-align: center; font-size: 0.9rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 18px;">
+        Don't have an account yet? 
+        <a href="{{ url_for('auth.register') }}" style="font-weight: 600;">Create Account</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

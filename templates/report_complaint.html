@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Report an Incident — CrimeConnect{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px;">
+
+  <div class="section-header" style="text-align: left; margin-bottom: 24px;">
+    <span class="section-tag">Citizen Reporting</span>
+    <h1 class="section-title">File an Incident Complaint</h1>
+    <p class="section-subtitle" style="margin: 6px 0 0;">
+      Provide factual details of the incident. An automated, unique reference tracking number will be issued immediately upon submission.
+    </p>
+  </div>
+
+  <!-- Educational Project Banner -->
+  <div class="card" style="border-left: 4px solid var(--accent-blue); background-color: var(--accent-blue-light); margin-bottom: 24px;">
+    <div class="card-body" style="padding: 16px 20px; display: flex; gap: 14px; align-items: center;">
+      <i class="fa-solid fa-circle-info" style="font-size: 1.5rem; color: var(--accent-blue);"></i>
+      <span style="font-size: 0.9rem; color: #1e3a8a;">
+        <strong>Academic Demonstration Note:</strong> Please use fictional or simulated incident data. Do not upload actual government IDs, sensitive personal credit records, or live crime evidence.
+      </span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="fa-solid fa-file-shield" style="color: var(--accent-blue);"></i> Incident Complaint Form</h3>
+      <span style="font-size: 0.85rem; color: var(--text-muted);"><span class="required">*</span> Required fields</span>
+    </div>
+
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('complaints.report_complaint') }}" enctype="multipart/form-data" class="needs-loading-feedback">
+        {{ form.csrf_token }}
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- Category -->
+          <div class="form-group">
+            <label class="form-label" for="category">
+              <i class="fa-solid fa-tags"></i> Complaint Category <span class="required">*</span>
+            </label>
+            {{ form.category(class="form-select", id="category") }}
+            {% for error in form.category.errors %}
+              <div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <!-- Title -->
+          <div class="form-group">
+            <label class="form-label" for="title">
+              <i class="fa-solid fa-heading"></i> Incident Title <span class="required">*</span>
+            </label>
+            {{ form.title(class="form-control", id="title", placeholder="Brief summary, e.g. Stolen Laptop from Library") }}
+            {% for error in form.title.errors %}
+              <div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- Incident Date -->
+          <div class="form-group">
+            <label class="form-label" for="incident_date">
+              <i class="fa-regular fa-calendar"></i> Incident Date <span class="required">*</span>
+            </label>
+            {{ form.incident_date(class="form-control", id="incident_date", type="date") }}
+            {% for error in form.incident_date.errors %}
+              <div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <!-- Incident Time -->
+          <div class="form-group">
+            <label class="form-label" for="incident_time">
+              <i class="fa-regular fa-clock"></i> Approximate Time (Optional)
+            </label>
+            {{ form.incident_time(class="form-control", id="incident_time", type="time") }}
+            {% for error in form.incident_time.errors %}
+              <div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Incident Location -->
+        <div class="form-group">
+          <label class="form-label" for="incident_location">
+            <i class="fa-solid fa-location-dot"></i> Incident Location / Platform <span class="required">*</span>
+          </label>
+          {{ form.incident_location(class="form-control", id="incident_location", placeholder="Physical address, landmark, or online service URL") }}
+          {% for error in form.incident_location.errors %}
+            <div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label class="form-label" for="description">
+            <i class="fa-solid fa-align-left"></i> Detailed Description <span class="required">*</span>
+          </label>
+          {{ form.description(class="form-control", id="description", rows="5", placeholder="Chronological description of the event, persons involved, damages incurred, or communications received...") }}
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+            <span class="form-help">Be as specific and objective as possible.</span>
+            <span id="charCount" style="font-size: 0.825rem; font-weight: 500;">0 characters (minimum 20)</span>
+          </div>
+          {% for error in form.description.errors %}
+            <div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- Witness Information -->
+        <div class="form-group">
+          <label class="form-label" for="witness_information">
+            <i class="fa-solid fa-users-viewfinder"></i> Witness Information (Optional)
+          </label>
+          {{ form.witness_information(class="form-control", id="witness_information", rows="2", placeholder="Names, contact details, or physical descriptions of any eyewitnesses...") }}
+          {% for error in form.witness_information.errors %}
+            <div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- File Upload -->
+        <div class="form-group">
+          <label class="form-label" for="attachment">
+            <i class="fa-solid fa-paperclip"></i> Supporting Document / Evidence (Optional, max 5MB)
+          </label>
+          {{ form.attachment(class="form-control", id="attachment") }}
+          <span class="form-help">Supported formats: PNG, JPG, JPEG, PDF, TXT, DOCX. Stored in protected server storage.</span>
+          {% for error in form.attachment.errors %}
+            <div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- Confirmation Checkbox -->
+        <div class="form-check" style="background: var(--bg-alt); padding: 14px 18px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-top: 24px;">
+          {{ form.accuracy_confirmation(id="accuracy_confirmation") }}
+          <label for="accuracy_confirmation">
+            <strong>Accuracy Declaration:</strong> I hereby declare that the details provided in this report are truthful to the best of my knowledge for this academic laboratory simulation.
+          </label>
+        </div>
+        {% for error in form.accuracy_confirmation.errors %}
+          <div class="form-error" style="margin-top: -12px; margin-bottom: 20px;"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+        {% endfor %}
+
+        <div style="display: flex; gap: 14px; margin-top: 24px;">
+          <button type="submit" class="btn btn-primary btn-lg" style="flex: 1;">
+            <i class="fa-solid fa-paper-plane"></i> Submit Incident Complaint
+          </button>
+          <a href="{{ url_for('complaints.dashboard') }}" class="btn btn-outline btn-lg">
+            Cancel
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

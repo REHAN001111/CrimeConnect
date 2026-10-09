@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}CrimeConnect — Online Crime Reporting Portal{% endblock %}</title>
+  
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Chart.js for Administrative Visual Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Application Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Top Academic & Emergency Disclaimer Banner -->
+  <div class="disclaimer-top-banner">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <span><strong>EDUCATIONAL PROJECT ONLY:</strong> CrimeConnect is a student ITL prototype and is NOT affiliated with real law enforcement. For real-life emergencies, dial <strong>911 / 112 / 100</strong> immediately.</span>
+  </div>
+
+  <!-- Main Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('main.index') }}" class="nav-brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+          <span>CrimeConnect</span>
+          <span class="brand-tagline">Incident Reporting System</span>
+        </div>
+      </a>
+
+      <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <ul class="nav-links">
+        <li>
+          <a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}">
+            <i class="fa-solid fa-house"></i> Home
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('complaints.report_complaint') }}" class="nav-link {% if request.endpoint == 'complaints.report_complaint' %}active{% endif %}">
+            <i class="fa-solid fa-file-circle-plus"></i> Report Incident
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('complaints.track_complaint') }}" class="nav-link {% if request.endpoint == 'complaints.track_complaint' %}active{% endif %}">
+            <i class="fa-solid fa-magnifying-glass"></i> Track Status
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('main.about') }}" class="nav-link {% if request.endpoint == 'main.about' %}active{% endif %}">
+            <i class="fa-solid fa-circle-info"></i> About
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('main.faq') }}" class="nav-link {% if request.endpoint == 'main.faq' %}active{% endif %}">
+            <i class="fa-solid fa-circle-question"></i> FAQ
+          </a>
+        </li>
+      </ul>
+
+      <div class="nav-actions">
+        <!-- Dark/Light Theme Toggle -->
+        <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle dark mode">
+          <i id="themeIcon" class="fa-solid fa-moon"></i>
+        </button>
+
+        {% if current_user.is_authenticated %}
+          {% if current_user.is_admin %}
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-danger btn-sm">
+              <i class="fa-solid fa-screwdriver-wrench"></i> Admin Panel
+            </a>
+          {% else %}
+            <a href="{{ url_for('complaints.dashboard') }}" class="btn btn-secondary btn-sm">
+              <i class="fa-solid fa-chart-pie"></i> Dashboard
+            </a>
+          {% endif %}
+          <a href="{{ url_for('auth.profile') }}" class="btn btn-outline btn-sm">
+            <i class="fa-regular fa-user"></i> Profile
+          </a>
+          <a href="{{ url_for('auth.logout') }}" class="btn btn-outline btn-sm" title="Log out">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
+          </a>
+          <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-user-plus"></i> Register
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Flash Notifications -->
+  <div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <div class="alert-content">
+              {% if category == 'success' %}
+                <i class="fa-solid fa-circle-check"></i>
+              {% elif category == 'danger' %}
+                <i class="fa-solid fa-circle-exclamation"></i>
+              {% elif category == 'warning' %}
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              {% else %}
+                <i class="fa-solid fa-circle-info"></i>
+              {% endif %}
+              <span>{{ message }}</span>
+            </div>
+            <button class="alert-close" aria-label="Close notification">&times;</button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Primary Content Area -->
+  <div class="content-wrapper">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- Application Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-column">
+          <div class="nav-brand" style="color: #ffffff; margin-bottom: 12px;">
+            <div class="brand-icon">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <span>CrimeConnect</span>
+          </div>
+          <p style="font-size: 0.9rem; line-height: 1.6; color: #94a3b8;">
+            A responsive Python & Flask web portal engineered for streamlined incident reporting, verifiable complaint tracking, and administrative oversight.
+          </p>
+          <div style="margin-top: 14px; font-size: 0.825rem; color: #cbd5e1; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; border: 1px dashed rgba(255,255,255,0.15);">
+            <i class="fa-solid fa-graduation-cap"></i> Built as an Information Technology Lab (ITL) Demonstration.
+          </div>
+        </div>
+
+        <div class="footer-column">
+          <h4>Portal Links</h4>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('main.index') }}"><i class="fa-solid fa-angle-right"></i> Home</a></li>
+            <li><a href="{{ url_for('complaints.report_complaint') }}"><i class="fa-solid fa-angle-right"></i> File Incident</a></li>
+            <li><a href="{{ url_for('complaints.track_complaint') }}"><i class="fa-solid fa-angle-right"></i> Track Complaint</a></li>
+            <li><a href="{{ url_for('main.about') }}"><i class="fa-solid fa-angle-right"></i> About Project</a></li>
+            <li><a href="{{ url_for('main.faq') }}"><i class="fa-solid fa-angle-right"></i> FAQ</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h4>Security & Privacy</h4>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('main.about') }}#security"><i class="fa-solid fa-angle-right"></i> Password Hashing</a></li>
+            <li><a href="{{ url_for('main.about') }}#security"><i class="fa-solid fa-angle-right"></i> Role-Based Access</a></li>
+            <li><a href="{{ url_for('main.about') }}#security"><i class="fa-solid fa-angle-right"></i> CSRF Protection</a></li>
+            <li><a href="{{ url_for('main.about') }}#security"><i class="fa-solid fa-angle-right"></i> Isolated Storage</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h4>Emergency Helplines</h4>
+          <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 8px;">
+            In genuine emergency situations, please reach local emergency dispatchers:
+          </p>
+          <div style="font-weight: 700; color: #f87171; font-size: 1.1rem; margin-bottom: 6px;">
+            <i class="fa-solid fa-phone-volume"></i> National Emergency: 911 / 112 / 100
+          </div>
+          <div style="font-size: 0.85rem; color: #94a3b8;">
+            <i class="fa-solid fa-envelope"></i> Lab Contact: demo-itl@crimeconnect.local
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; {{ current_year }} CrimeConnect — Educational ITL Prototype. Not connected to real law enforcement agencies.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Core JavaScript -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

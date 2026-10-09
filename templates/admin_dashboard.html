@@ -1,0 +1,266 @@
+{% extends 'base.html' %}
+
+{% block title %}Administrator Control Center — CrimeConnect{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Admin Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+        <span class="badge badge-role-admin"><i class="fa-solid fa-shield-halved"></i> Administrator Privileges</span>
+        <span style="font-size: 0.825rem; color: var(--text-muted);">Confidential Staff Workspace</span>
+      </div>
+      <h1 class="section-title">Incident Management Console</h1>
+    </div>
+    
+    <div style="display: flex; gap: 10px;">
+      <a href="{{ url_for('admin.export_csv', q=search_keyword, status=status_filter, category=category_filter) }}" class="btn btn-outline">
+        <i class="fa-solid fa-file-csv"></i> Export to CSV
+      </a>
+      <a href="{{ url_for('complaints.report_complaint') }}" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> File Incident
+      </a>
+    </div>
+  </div>
+
+  <!-- Summary Statistics Grid -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon primary">
+        <i class="fa-solid fa-folder-open"></i>
+      </div>
+      <div>
+        <div class="stat-value">{{ total_count }}</div>
+        <div class="stat-label">Total Reports</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon muted">
+        <i class="fa-solid fa-inbox"></i>
+      </div>
+      <div>
+        <div class="stat-value">{{ submitted_count }}</div>
+        <div class="stat-label">New / Submitted</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon warning">
+        <i class="fa-solid fa-hourglass-half"></i>
+      </div>
+      <div>
+        <div class="stat-value">{{ under_review_count }}</div>
+        <div class="stat-label">Under Review</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon purple">
+        <i class="fa-solid fa-circle-question"></i>
+      </div>
+      <div>
+        <div class="stat-value">{{ info_requested_count }}</div>
+        <div class="stat-label">Info Requested</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon success">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <div>
+        <div class="stat-value">{{ resolved_count }}</div>
+        <div class="stat-label">Resolved</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon danger">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <div>
+        <div class="stat-value">{{ closed_count }}</div>
+        <div class="stat-label">Closed</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Visual Analytics Charts Row -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px;">
+    <!-- Category Doughnut Chart -->
+    <div class="card" style="margin-bottom: 0;">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-chart-pie" style="color: var(--accent-blue);"></i> Reports by Crime Category</h3>
+      </div>
+      <div class="card-body" style="height: 280px; position: relative;">
+        <canvas id="categoryChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Status Distribution Bar Chart -->
+    <div class="card" style="margin-bottom: 0;">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-chart-simple" style="color: var(--accent-blue);"></i> Workflow Status Distribution</h3>
+      </div>
+      <div class="card-body" style="height: 280px; position: relative;">
+        <canvas id="statusChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div class="card">
+    <div class="card-body" style="padding: 16px 20px;">
+      <form method="GET" action="{{ url_for('admin.dashboard') }}" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+        
+        <div style="flex: 1; min-width: 220px;">
+          <input type="text" name="q" value="{{ search_keyword }}" placeholder="Search ref #, title, or location..." class="form-control">
+        </div>
+
+        <div style="min-width: 180px;">
+          <select name="status" class="form-select">
+            <option value="">All Statuses</option>
+            {% for s in statuses %}
+              <option value="{{ s }}" {% if status_filter == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div style="min-width: 180px;">
+          <select name="category" class="form-select">
+            <option value="">All Categories</option>
+            {% for c in categories %}
+              <option value="{{ c }}" {% if category_filter == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-secondary">
+          <i class="fa-solid fa-filter"></i> Apply Filters
+        </button>
+
+        {% if search_keyword or status_filter or category_filter %}
+          <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline">
+            <i class="fa-solid fa-rotate-left"></i> Reset
+          </a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <!-- Master Complaints Management Table -->
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="fa-solid fa-clipboard-list" style="color: var(--accent-blue);"></i> All Incident Records</h3>
+      <span style="font-size: 0.85rem; color: var(--text-muted);">
+        Page {{ pagination.page }} of {{ pagination.pages or 1 }} ({{ pagination.total }} total entries)
+      </span>
+    </div>
+
+    <div class="card-body" style="padding: 0;">
+      {% if complaints %}
+        <div class="table-container" style="border: none;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Reference #</th>
+                <th>Complainant</th>
+                <th>Title / Summary</th>
+                <th>Category</th>
+                <th>Current Status</th>
+                <th>Date Lodged</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in complaints %}
+                <tr>
+                  <td>
+                    <strong style="font-family: monospace; color: var(--accent-blue); font-size: 0.95rem;">
+                      {{ c.reference_number }}
+                    </strong>
+                  </td>
+                  <td>
+                    <div style="font-weight: 600;">{{ c.complainant.full_name }}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">{{ c.complainant.email }}</div>
+                  </td>
+                  <td>
+                    <div style="font-weight: 600; color: var(--text-main);">{{ c.title }}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-solid fa-location-dot"></i> {{ c.incident_location }}</div>
+                  </td>
+                  <td>
+                    <span style="font-size: 0.85rem; background: var(--bg-alt); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color);">
+                      {{ c.category }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge {{ c.status_badge_class }}">
+                      {{ c.status }}
+                    </span>
+                  </td>
+                  <td style="font-size: 0.85rem; color: var(--text-muted);">
+                    {{ c.created_at.strftime('%Y-%m-%d %H:%M') }}
+                  </td>
+                  <td style="text-align: right;">
+                    <a href="{{ url_for('admin.complaint_detail', complaint_id=c.id) }}" class="btn btn-primary btn-sm">
+                      <i class="fa-solid fa-gear"></i> Manage Case
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        {% if pagination.pages > 1 %}
+          <div style="padding: 16px;">
+            <ul class="pagination">
+              <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('admin.dashboard', page=pagination.prev_num, q=search_keyword, status=status_filter, category=category_filter) if pagination.has_prev else '#' }}">
+                  &laquo; Previous
+                </a>
+              </li>
+
+              {% for p in pagination.iter_pages(left_edge=2, left_current=2, right_current=3, right_edge=2) %}
+                {% if p %}
+                  <li class="page-item {% if p == pagination.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('admin.dashboard', page=p, q=search_keyword, status=status_filter, category=category_filter) }}">
+                      {{ p }}
+                    </a>
+                  </li>
+                {% else %}
+                  <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                {% endif %}
+              {% endfor %}
+
+              <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('admin.dashboard', page=pagination.next_num, q=search_keyword, status=status_filter, category=category_filter) if pagination.has_next else '#' }}">
+                  Next &raquo;
+                </a>
+              </li>
+            </ul>
+          </div>
+        {% endif %}
+
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </div>
+          <h3>No Complaint Records Found</h3>
+          <p>There are no incident records matching your filter criteria.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin_charts.js') }}"></script>
+{% endblock %}

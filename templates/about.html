@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}About CrimeConnect — Academic Project Details{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 960px;">
+
+  <div class="section-header" style="text-align: left; margin-bottom: 28px;">
+    <span class="section-tag">Project Documentation</span>
+    <h1 class="section-title">About CrimeConnect</h1>
+    <p class="section-subtitle" style="margin: 6px 0 0;">
+      Online Crime Reporting and Complaint Management System developed as a college Information Technology Lab (ITL) full-stack software engineering project.
+    </p>
+  </div>
+
+  <div class="card" style="margin-bottom: 28px;">
+    <div class="card-header">
+      <h3><i class="fa-solid fa-bullseye" style="color: var(--accent-blue);"></i> Project Objective & Scope</h3>
+    </div>
+    <div class="card-body">
+      <p style="margin-bottom: 14px;">
+        Traditional manual complaint logging often suffers from physical queues, lack of verifiable acknowledgments, and opaque status updates for citizens. <strong>CrimeConnect</strong> addresses these issues by offering a digital portal where citizens can submit structured incident reports, immediately obtain an algorithmic reference code, and track the progress of their complaints transparently.
+      </p>
+      <p>
+        The platform features a distinct, protected administrative dashboard that empowers authorized operators to triage incoming reports, request additional details, record public updates, and document internal investigative notes.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 28px;">
+    <div class="card-header">
+      <h3><i class="fa-solid fa-layer-group" style="color: var(--accent-blue);"></i> Technology Stack</h3>
+    </div>
+    <div class="card-body">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+        <div style="background: var(--bg-alt); padding: 16px; border-radius: var(--radius-md);">
+          <strong style="color: var(--accent-blue); display: block; margin-bottom: 4px;">Backend Architecture</strong>
+          <span style="font-size: 0.95rem; color: var(--text-main);">Python 3, Flask 3.x, Flask-Login, Flask-WTF, WTForms</span>
+        </div>
+        <div style="background: var(--bg-alt); padding: 16px; border-radius: var(--radius-md);">
+          <strong style="color: var(--accent-blue); display: block; margin-bottom: 4px;">Database & Storage</strong>
+          <span style="font-size: 0.95rem; color: var(--text-main);">SQLite 3 with SQLAlchemy ORM, isolated file storage</span>
+        </div>
+        <div style="background: var(--bg-alt); padding: 16px; border-radius: var(--radius-md);">
+          <strong style="color: var(--accent-blue); display: block; margin-bottom: 4px;">Frontend Interface</strong>
+          <span style="font-size: 0.95rem; color: var(--text-main);">HTML5 semantic structure, CSS3 responsive design, JavaScript, Chart.js, Font Awesome</span>
+        </div>
+        <div style="background: var(--bg-alt); padding: 16px; border-radius: var(--radius-md);">
+          <strong style="color: var(--accent-blue); display: block; margin-bottom: 4px;">Testing Framework</strong>
+          <span style="font-size: 0.95rem; color: var(--text-main);">Pytest unit & integration test suite</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="security" style="margin-bottom: 28px;">
+    <div class="card-header">
+      <h3><i class="fa-solid fa-shield-halved" style="color: var(--accent-blue);"></i> Security & Defensive Engineering</h3>
+    </div>
+    <div class="card-body">
+      <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-main);">
+        <li><strong>Cryptographic Password Storage:</strong> Passwords are hashed using Werkzeug's secure hashing functions, preventing exposure in case of data breaches.</li>
+        <li><strong>Role-Based Access Control (RBAC):</strong> Role fields are strictly server-managed. The registration route hardcodes the citizen role, disallowing privilege escalation. Admin routes are guarded by a custom <code>@admin_required</code> decorator.</li>
+        <li><strong>CSRF Protection:</strong> All state-changing POST forms utilize unique CSRF tokens verified via Flask-WTF.</li>
+        <li><strong>Path Traversal Defense:</strong> Uploaded evidence files are renamed to UUID identifiers and stored in a non-public folder; file access is authenticated and checked against complaint ownership.</li>
+        <li><strong>SQL Injection Prevention:</strong> Parameterized queries mediated by SQLAlchemy ORM protect database queries from injection attacks.</li>
+        <li><strong>Two-Factor Tracking Authorization:</strong> Public status queries require both the unique reference number and complainant email to prevent unauthorized data exposure.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="border-left: 4px solid var(--crimson-red); background-color: var(--crimson-red-light);">
+    <div class="card-body">
+      <h4 style="color: var(--crimson-red); margin-bottom: 6px;">
+        <i class="fa-solid fa-triangle-exclamation"></i> Academic Demonstration Disclaimer
+      </h4>
+      <p style="color: #7f1d1d; font-size: 0.95rem;">
+        CrimeConnect is designed strictly as an educational software engineering prototype for ITL coursework. It does not possess legal standing and is not affiliated with any actual emergency service or law enforcement agency.
+      </p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

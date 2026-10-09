@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Case {{ complaint.reference_number }} — Admin Control{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+    <div>
+      <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline btn-sm" style="margin-bottom: 8px;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Admin Console
+      </a>
+      <h1 class="section-title" style="font-size: 1.85rem;">Administrative Case Review: {{ complaint.reference_number }}</h1>
+    </div>
+    <span class="badge {{ complaint.status_badge_class }}" style="font-size: 1.05rem; padding: 10px 20px;">
+      {{ complaint.status }}
+    </span>
+  </div>
+
+  <div class="admin-grid">
+
+    <!-- Left Column: Details & Audit Trail -->
+    <div>
+
+      <!-- Complainant Identity Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-user-check" style="color: var(--accent-blue);"></i> Complainant Profile</h3>
+          <span class="badge badge-role-user">Citizen Account</span>
+        </div>
+        <div class="card-body">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Full Legal Name</span>
+              <strong style="color: var(--text-main);">{{ complaint.complainant.full_name }}</strong>
+            </div>
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Registered Email</span>
+              <strong style="color: var(--text-main);">{{ complaint.complainant.email }}</strong>
+            </div>
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Phone Number</span>
+              <strong style="color: var(--text-main);">{{ complaint.complainant.phone or 'Not Provided' }}</strong>
+            </div>
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Account Created</span>
+              <strong style="color: var(--text-main);">{{ complaint.complainant.created_at.strftime('%Y-%m-%d') }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Incident Report Particulars -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-file-shield" style="color: var(--accent-blue);"></i> Incident Specifics</h3>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">
+            Filed {{ complaint.created_at.strftime('%Y-%m-%d %H:%M') }}
+          </span>
+        </div>
+        <div class="card-body">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; background: var(--bg-alt); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Crime Category</span>
+              <strong>{{ complaint.category }}</strong>
+            </div>
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Incident Date</span>
+              <strong>{{ complaint.incident_date.strftime('%Y-%m-%d') }}</strong>
+            </div>
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Incident Time</span>
+              <strong>{{ complaint.incident_time.strftime('%I:%M %p') if complaint.incident_time else 'Unspecified' }}</strong>
+            </div>
+            <div>
+              <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Location / Platform</span>
+              <strong>{{ complaint.incident_location }}</strong>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <h4 style="font-size: 1rem; margin-bottom: 6px;">Incident Title</h4>
+            <div style="font-size: 1.1rem; font-weight: 700; color: var(--accent-blue);">
+              {{ complaint.title }}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <h4 style="font-size: 1rem; margin-bottom: 6px;">Detailed Description</h4>
+            <div style="background: var(--bg-card); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); line-height: 1.6; white-space: pre-line;">
+              {{ complaint.description }}
+            </div>
+          </div>
+
+          {% if complaint.witness_information %}
+            <div style="margin-bottom: 20px;">
+              <h4 style="font-size: 1rem; margin-bottom: 6px;">Witness Information</h4>
+              <div style="background: var(--bg-card); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); color: var(--text-muted);">
+                {{ complaint.witness_information }}
+              </div>
+            </div>
+          {% endif %}
+
+          <div>
+            <h4 style="font-size: 1rem; margin-bottom: 6px;">Evidence File</h4>
+            {% if complaint.attachment_filename %}
+              <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-alt); padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <i class="fa-solid fa-paperclip" style="color: var(--accent-blue); font-size: 1.2rem;"></i>
+                  <span>{{ complaint.attachment_original_name }}</span>
+                </div>
+                <a href="{{ url_for('complaints.download_attachment', complaint_id=complaint.id) }}" class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-download"></i> Download Evidence
+                </a>
+              </div>
+            {% else %}
+              <span style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">No attachment provided.</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Public Status Transition Timeline -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-blue);"></i> Status Workflow Audit Trail</h3>
+        </div>
+        <div class="card-body">
+          <div class="timeline">
+            {% for item in complaint.history %}
+              <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-title">
+                      Transition: <strong>{{ item.previous_status }} &rarr; {{ item.new_status }}</strong>
+                    </span>
+                    <span class="timeline-date">
+                      <i class="fa-regular fa-clock"></i> {{ item.created_at.strftime('%Y-%m-%d %H:%M') }}
+                    </span>
+                  </div>
+                  <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">
+                    Changed by: <strong>{{ item.changer.full_name }}</strong> ({{ item.changer.role }})
+                  </div>
+                  {% if item.public_remarks %}
+                    <p class="timeline-remarks">
+                      <i class="fa-regular fa-comment"></i> {{ item.public_remarks }}
+                    </p>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Internal Administrative Notes Log -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-user-secret" style="color: var(--crimson-red);"></i> Internal Staff Investigation Notes</h3>
+          <span style="font-size: 0.8rem; background: var(--crimson-red-light); color: var(--crimson-red); padding: 4px 8px; border-radius: 4px; font-weight: 600;">
+            CONFIDENTIAL (Hidden from Complainant)
+          </span>
+        </div>
+        <div class="card-body">
+          {% if complaint.admin_notes %}
+            <div style="display: grid; gap: 14px;">
+              {% for n in complaint.admin_notes %}
+                <div style="background: var(--bg-alt); padding: 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--crimson-red);">
+                  <div style="display: flex; justify-content: space-between; font-size: 0.825rem; color: var(--text-muted); margin-bottom: 6px;">
+                    <span><strong><i class="fa-solid fa-user-shield"></i> {{ n.author.full_name }}</strong></span>
+                    <span>{{ n.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                  </div>
+                  <p style="font-size: 0.925rem; line-height: 1.5; color: var(--text-main); margin: 0;">
+                    {{ n.note }}
+                  </p>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">
+              No internal staff notes recorded yet for this case.
+            </p>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Administrative Action Forms -->
+    <div>
+
+      <!-- Update Status Card -->
+      <div class="card" style="border-top: 4px solid var(--accent-blue);">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-pen-to-square" style="color: var(--accent-blue);"></i> Update Status</h3>
+        </div>
+        <div class="card-body">
+          <form method="POST" action="{{ url_for('admin.complaint_detail', complaint_id=complaint.id) }}">
+            {{ status_form.csrf_token }}
+
+            <div class="form-group">
+              <label class="form-label" for="status">
+                <i class="fa-solid fa-arrows-spin"></i> New Workflow Status
+              </label>
+              {{ status_form.status(class="form-select", id="status") }}
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="public_remarks">
+                <i class="fa-regular fa-comment-dots"></i> Public Remarks for Complainant
+              </label>
+              {{ status_form.public_remarks(class="form-control", id="public_remarks", rows="4", placeholder="This message will be visible to the citizen on their tracking timeline...") }}
+              <span class="form-help">Transparent status explanation or instructions for the citizen.</span>
+            </div>
+
+            <button type="submit" name="update_status" value="1" class="btn btn-primary" style="width: 100%;">
+              <i class="fa-solid fa-floppy-disk"></i> Apply Status Change
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Add Confidential Admin Note Card -->
+      <div class="card" style="border-top: 4px solid var(--crimson-red);">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-lock" style="color: var(--crimson-red);"></i> Record Internal Note</h3>
+        </div>
+        <div class="card-body">
+          <form method="POST" action="{{ url_for('admin.complaint_detail', complaint_id=complaint.id) }}">
+            {{ note_form.csrf_token }}
+
+            <div class="form-group">
+              <label class="form-label" for="note">
+                <i class="fa-solid fa-clipboard"></i> Investigation Note (Staff Only)
+              </label>
+              {{ note_form.note(class="form-control", id="note", rows="4", placeholder="Enter confidential investigator notes, cross-reference IDs, or internal action items...") }}
+              <span class="form-help" style="color: var(--crimson-red);">
+                <i class="fa-solid fa-eye-slash"></i> Visible strictly to administrators. Complainants cannot see this.
+              </span>
+            </div>
+
+            <button type="submit" name="add_note" value="1" class="btn btn-danger" style="width: 100%;">
+              <i class="fa-solid fa-plus"></i> Save Internal Note
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

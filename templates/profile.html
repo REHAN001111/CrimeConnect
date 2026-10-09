@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}User Profile — CrimeConnect{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 860px;">
+
+  <div class="section-header" style="text-align: left; margin-bottom: 28px;">
+    <span class="section-tag">Account Details</span>
+    <h1 class="section-title">My Profile</h1>
+  </div>
+
+  <div class="card" style="margin-bottom: 24px;">
+    <div class="card-header">
+      <h3><i class="fa-regular fa-id-badge" style="color: var(--accent-blue);"></i> Personal Information</h3>
+      {% if current_user.is_admin %}
+        <span class="badge badge-role-admin"><i class="fa-solid fa-shield-halved"></i> Administrator</span>
+      {% else %}
+        <span class="badge badge-role-user"><i class="fa-solid fa-user"></i> Registered Citizen</span>
+      {% endif %}
+    </div>
+    <div class="card-body">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+        <div>
+          <label style="font-size: 0.85rem; color: var(--text-muted); display: block;">Full Name</label>
+          <strong style="font-size: 1.1rem; color: var(--text-main);">{{ current_user.full_name }}</strong>
+        </div>
+        <div>
+          <label style="font-size: 0.85rem; color: var(--text-muted); display: block;">Email Address</label>
+          <strong style="font-size: 1.1rem; color: var(--text-main);">{{ current_user.email }}</strong>
+        </div>
+        <div>
+          <label style="font-size: 0.85rem; color: var(--text-muted); display: block;">Phone Number</label>
+          <strong style="font-size: 1.1rem; color: var(--text-main);">{{ current_user.phone or 'Not Provided' }}</strong>
+        </div>
+        <div>
+          <label style="font-size: 0.85rem; color: var(--text-muted); display: block;">Account Created</label>
+          <strong style="font-size: 1.1rem; color: var(--text-main);">{{ current_user.created_at.strftime('%B %d, %Y') }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity Metrics for this user -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon primary">
+        <i class="fa-solid fa-file-shield"></i>
+      </div>
+      <div>
+        <div class="stat-value">{{ total_submitted }}</div>
+        <div class="stat-label">Complaints Submitted</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon warning">
+        <i class="fa-solid fa-hourglass-half"></i>
+      </div>
+      <div>
+        <div class="stat-value">{{ under_review }}</div>
+        <div class="stat-label">Under Investigation</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon success">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <div>
+        <div class="stat-value">{{ resolved }}</div>
+        <div class="stat-label">Resolved Cases</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 12px; margin-top: 16px;">
+    {% if current_user.is_admin %}
+      <a href="{{ url_for('admin.dashboard') }}" class="btn btn-danger">
+        <i class="fa-solid fa-screwdriver-wrench"></i> Open Admin Panel
+      </a>
+    {% else %}
+      <a href="{{ url_for('complaints.dashboard') }}" class="btn btn-primary">
+        <i class="fa-solid fa-table-list"></i> Go to Dashboard
+      </a>
+      <a href="{{ url_for('complaints.report_complaint') }}" class="btn btn-secondary">
+        <i class="fa-solid fa-file-circle-plus"></i> File New Incident
+      </a>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

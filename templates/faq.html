@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Frequently Asked Questions — CrimeConnect{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 880px;">
+
+  <div class="section-header" style="text-align: left; margin-bottom: 28px;">
+    <span class="section-tag">Help Center</span>
+    <h1 class="section-title">Frequently Asked Questions</h1>
+    <p class="section-subtitle" style="margin: 6px 0 0;">
+      Got questions about submitting, tracking, or managing complaints on CrimeConnect? Find answers below.
+    </p>
+  </div>
+
+  <div style="display: grid; gap: 18px;">
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-circle-question" style="color: var(--accent-blue);"></i> How do I submit an incident report?</h3>
+      </div>
+      <div class="card-body">
+        <p style="color: var(--text-muted);">
+          First, create an account or sign in to your existing account. Click the <strong>Report Incident</strong> button in the navigation bar. Complete the form details including incident category, title, date, time, location, detailed description, and any optional evidence file. Once submitted, you will receive an instant unique reference identifier.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-circle-question" style="color: var(--accent-blue);"></i> Can anyone view my complaint if they know the reference number?</h3>
+      </div>
+      <div class="card-body">
+        <p style="color: var(--text-muted);">
+          No. To protect citizen privacy, our public tracking feature requires both the reference number and the verified complainant email address. Alternatively, authenticated users can simply view their own complaint history directly from their user dashboard.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-circle-question" style="color: var(--accent-blue);"></i> What file types can I upload as evidence?</h3>
+      </div>
+      <div class="card-body">
+        <p style="color: var(--text-muted);">
+          The platform accepts PNG, JPG, JPEG image formats, PDF documents, plain text (.txt), and Word documents (.docx) up to a maximum size of 5 Megabytes. Files are renamed and securely stored outside the public directory.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-circle-question" style="color: var(--accent-blue);"></i> What do the different complaint statuses mean?</h3>
+      </div>
+      <div class="card-body">
+        <ul style="padding-left: 20px; color: var(--text-muted); line-height: 1.8;">
+          <li><strong>Submitted:</strong> The report has been received into the system and is awaiting administrative triage.</li>
+          <li><strong>Under Review:</strong> An administrator has begun investigating the report details and reviewing attached documentation.</li>
+          <li><strong>Additional Information Requested:</strong> The administrator requires extra clarification, documents, or testimony from the complainant.</li>
+          <li><strong>Resolved:</strong> Necessary actions or solutions have been carried out and concluded.</li>
+          <li><strong>Closed:</strong> The case record is formally finalized and archived.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fa-solid fa-circle-question" style="color: var(--accent-blue);"></i> Can a user register as an administrator?</h3>
+      </div>
+      <div class="card-body">
+        <p style="color: var(--text-muted);">
+          No. In accordance with strict software engineering security principles, all user self-registrations are restricted to the 'user' role. Administrator accounts can only be seeded or created by server operators through the command-line interface.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

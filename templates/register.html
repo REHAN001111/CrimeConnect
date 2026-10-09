@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Citizen Registration — CrimeConnect{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="auth-wrapper" style="max-width: 540px;">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="brand-icon" style="margin: 0 auto; width: 48px; height: 48px; font-size: 1.4rem;">
+          <i class="fa-solid fa-user-plus"></i>
+        </div>
+        <h2>Citizen Registration</h2>
+        <p>Create an account to submit complaints and monitor status</p>
+      </div>
+
+      <form method="POST" action="{{ url_for('auth.register') }}" class="needs-loading-feedback">
+        {{ form.csrf_token }}
+
+        <div class="form-group">
+          <label class="form-label" for="full_name">
+            <i class="fa-regular fa-user"></i> Full Name <span class="required">*</span>
+          </label>
+          {{ form.full_name(class="form-control", id="full_name", placeholder="e.g. Alex Morgan") }}
+          {% for error in form.full_name.errors %}
+            <div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">
+            <i class="fa-regular fa-envelope"></i> Email Address <span class="required">*</span>
+          </label>
+          {{ form.email(class="form-control", id="email", placeholder="e.g. alex@example.com") }}
+          {% for error in form.email.errors %}
+            <div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="phone">
+            <i class="fa-solid fa-phone"></i> Contact Phone (Optional)
+          </label>
+          {{ form.phone(class="form-control", id="phone", placeholder="e.g. 555-0142") }}
+          {% for error in form.phone.errors %}
+            <div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">
+            <i class="fa-solid fa-lock"></i> Password <span class="required">*</span>
+          </label>
+          {{ form.password(class="form-control", id="password", placeholder="Minimum 6 characters") }}
+          {% for error in form.password.errors %}
+            <div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="confirm_password">
+            <i class="fa-solid fa-lock"></i> Confirm Password <span class="required">*</span>
+          </label>
+          {{ form.confirm_password(class="form-control", id="confirm_password", placeholder="Re-type password") }}
+          {% for error in form.confirm_password.errors %}
+            <div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div style="background-color: var(--bg-alt); padding: 12px; border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px; border: 1px solid var(--border-color);">
+          <i class="fa-solid fa-shield-halved" style="color: var(--accent-blue);"></i>
+          <strong>Security Notice:</strong> All public registrations are assigned citizen user permissions. Administrative accounts are protected and managed directly via CLI setup.
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+          <i class="fa-solid fa-user-check"></i> Register Account
+        </button>
+      </form>
+
+      <div style="margin-top: 24px; text-align: center; font-size: 0.9rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 18px;">
+        Already registered? 
+        <a href="{{ url_for('auth.login') }}" style="font-weight: 600;">Sign In here</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
